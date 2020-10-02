@@ -1,92 +1,138 @@
 import logging
 
-from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import Updater, CommandHandler, Filters
-
-# Enable logging
-from telegram.utils import helpers
+from telegram import (Poll, ParseMode, KeyboardButton, KeyboardButtonPollType,
+                      ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram.ext import (Updater, CommandHandler, PollAnswerHandler, PollHandler, MessageHandler,
+                          Filters)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
-
 logger = logging.getLogger(__name__)
-
-# Define constants that will allow us to reuse the deep-linking parameters.
-CHECK_THIS_OUT = 'check-this-out'
-USING_ENTITIES = 'using-entities-here'
-SO_COOL = 'so-cool'
 
 
 def start(update, context):
-    """Send a deep-linked URL when the command /start is issued."""
-    bot = context.bot
-    url = helpers.create_deep_linked_url(bot.get_me().username, CHECK_THIS_OUT, group=True)
-    text = "Feel free to tell your friends about it:\n\n" + url
-    update.message.reply_text(text)
+    """Inform user about what this bot can do"""
+    update.message.reply_text('Please select /poll to get a Poll, /quiz to get a Quiz or /preview'
+                              ' to generate a preview for your poll')
 
 
-def deep_linked_level_1(update, context):
-    """Reached through the CHECK_THIS_OUT payload"""
-    bot = context.bot
-    url = helpers.create_deep_linked_url(bot.get_me().username, SO_COOL)
-    text = "Awesome, you just accessed hidden functionality! " \
-           " Now let's get back to the private chat."
-    keyboard = InlineKeyboardMarkup.from_button(
-        InlineKeyboardButton(text='Continue here!', url=url)
+def poll(update, context):
+    """Sends a predefined poll"""
+    questions = ["Good", "Really good", "Fantastic", "Great"]
+    message = context.bot.send_poll(update.effective_chat.id, "How are you?", questions,
+                                    is_anonymous=False, allows_multiple_answers=True)
+    # Save some info about the poll the bot_data for later use in receive_poll_answer
+    payload = {message.poll.id: {"questions": questions, "message_id": message.message_id,
+                                 "chat_id": update.effective_chat.id, "answers": 0}}
+    context.bot_data.update(payload)
+
+
+def receive_poll_answer(update, context):
+    """Summarize a users poll vote"""
+    answer = update.poll_answer
+    poll_id = answer.poll_id
+    try:
+        questions = context.bot_data[poll_id]["questions"]
+    # this means this poll answer update is from an old poll, we can't do our answering then
+    except KeyError:
+        return
+    selected_options = answer.option_ids
+    answer_string = ""
+    for question_id in selected_options:
+        if question_id != selected_options[-1]:
+            answer_string += questions[question_id] + " and "
+        else:
+            answer_string += questions[question_id]
+    context.bot.send_message(context.bot_data[poll_id]["chat_id"],
+                             "{} feels {}!".format(update.effective_user.mention_html(),
+                                                   answer_string),
+                             parse_mode=ParseMode.HTML)
+    context.bot_data[poll_id]["answers"] += 1
+    # Close poll after three participants voted
+    if context.bot_data[poll_id]["answers"] == 3:
+        context.bot.stop_poll(context.bot_data[poll_id]["chat_id"],
+                              context.bot_data[poll_id]["message_id"])
+
+
+def quiz(update, context):
+    """Send a predefined poll"""
+    questions = ["1", "2", "4", "20"]
+    message = update.effective_message.reply_poll("How many eggs do you need for a cake?",
+                                                  questions, type=Poll.QUIZ, correct_option_id=2)
+    # Save some info about the poll the bot_data for later use in receive_quiz_answer
+    payload = {message.poll.id: {"chat_id": update.effective_chat.id,
+                                 "message_id": message.message_id}}
+    context.bot_data.update(payload)
+
+
+def receive_quiz_answer(update, context):
+    """Close quiz after three participants took it"""
+    # the bot can receive closed poll updates we don't care about
+    if update.poll.is_closed:
+        return
+    if update.poll.total_voter_count == 3:
+        try:
+            quiz_data = context.bot_data[update.poll.id]
+        # this means this poll answer update is from an old poll, we can't stop it then
+        except KeyError:
+            return
+        context.bot.stop_poll(quiz_data["chat_id"], quiz_data["message_id"])
+
+
+def preview(update, context):
+    """Ask user to create a poll and display a preview of it"""
+    # using this without a type lets the user chooses what he wants (quiz or poll)
+    button = [[KeyboardButton("Press me!", request_poll=KeyboardButtonPollType())]]
+    message = "Press the button to let the bot generate a preview for your poll"
+    # using one_time_keyboard to hide the keyboard
+    update.effective_message.reply_text(message,
+                                        reply_markup=ReplyKeyboardMarkup(button,
+                                                                         one_time_keyboard=True))
+
+
+def receive_poll(update, context):
+    """On receiving polls, reply to it by a closed poll copying the received poll"""
+    actual_poll = update.effective_message.poll
+    # Only need to set the question and options, since all other parameters don't matter for
+    # a closed poll
+    update.effective_message.reply_poll(
+        question=actual_poll.question,
+        options=[o.text for o in actual_poll.options],
+        # with is_closed true, the poll/quiz is immediately closed
+        is_closed=True,
+        reply_markup=ReplyKeyboardRemove()
     )
-    update.message.reply_text(text, reply_markup=keyboard)
 
 
-def deep_linked_level_2(update, context):
-    """Reached through the SO_COOL payload"""
-    bot = context.bot
-    url = helpers.create_deep_linked_url(bot.get_me().username, USING_ENTITIES)
-    text = "You can also mask the deep-linked URLs as links: " \
-           "[▶️ CLICK HERE]({}).".format(url)
-    update.message.reply_text(text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-
-
-def deep_linked_level_3(update, context):
-    """Reached through the USING_ENTITIES payload"""
-    payload = context.args
-    update.message.reply_text("Congratulations! This is as deep as it gets 👏🏻\n\n"
-                              "The payload was: {}".format(payload))
+def help_handler(update, context):
+    """Display a help message"""
+    update.message.reply_text("Use /quiz, /poll or /preview to test this "
+                              "bot.")
 
 
 def main():
-    """Start the bot."""
     # Create the Updater and pass it your bot's token.
+    # Make sure to set use_context=True to use the new context based callbacks
+    # Post version 12 this will no longer be necessary
     updater = Updater("1286086072:AAGXY-EQBlQakoDjrYC97nUKteZosM91NHE", use_context=True)
-
-    # Get the dispatcher to register handlers
     dp = updater.dispatcher
-
-    # More info on what deep linking actually is (read this first if it's unclear to you):
-    # https://core.telegram.org/bots#deep-linking
-
-    # Register a deep-linking handler
-    dp.add_handler(CommandHandler("start", deep_linked_level_1, Filters.regex(CHECK_THIS_OUT)))
-
-    # This one works with a textual link instead of an URL
-    dp.add_handler(CommandHandler("start", deep_linked_level_2, Filters.regex(SO_COOL)))
-
-    # We can also pass on the deep-linking payload
-    dp.add_handler(CommandHandler("start",
-                                  deep_linked_level_3,
-                                  Filters.regex(USING_ENTITIES),
-                                  pass_args=True))
-
-    # Make sure the deep-linking handlers occur *before* the normal /start handler.
-    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('poll', poll))
+    dp.add_handler(PollAnswerHandler(receive_poll_answer))
+    dp.add_handler(CommandHandler('quiz', quiz))
+    dp.add_handler(PollHandler(receive_quiz_answer))
+    dp.add_handler(CommandHandler('preview', preview))
+    dp.add_handler(MessageHandler(Filters.poll, receive_poll))
+    dp.add_handler(CommandHandler('help', help_handler))
 
     # Start the Bot
     updater.start_polling()
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
+    # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT
     updater.idle()
 
 
 if __name__ == '__main__':
     main()
+© 2020 GitHub, Inc.
