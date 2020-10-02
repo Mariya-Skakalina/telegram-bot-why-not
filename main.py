@@ -19,6 +19,13 @@ dispatcher.add_handler(start_handler)
 def echo(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
 
+@bot.message_handler(content_types=["text"])
+def default_test(message):
+    keyboard = types.InlineKeyboardMarkup()
+    url_button = types.InlineKeyboardButton(text="Перейти на Яндекс", url="https://ya.ru")
+    keyboard.add(url_button)
+    bot.send_message(message.chat.id, "Привет! Нажми на кнопку и перейди в поисковик.", reply_markup=keyboard)
+
 
 echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
 dispatcher.add_handler(echo_handler)
