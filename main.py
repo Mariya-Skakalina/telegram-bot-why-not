@@ -1,53 +1,90 @@
 import logging
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Updater, CommandHandler, Filters
+
+# Enable logging
+from telegram.utils import helpers
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
+
 logger = logging.getLogger(__name__)
+
+# Define constants that will allow us to reuse the deep-linking parameters.
+CHECK_THIS_OUT = 'check-this-out'
+USING_ENTITIES = 'using-entities-here'
+SO_COOL = 'so-cool'
 
 
 def start(update, context):
-    keyboard = [[InlineKeyboardButton("Option 1", callback_data='1'),
-                 InlineKeyboardButton("Option 2", callback_data='2')],
-
-                [InlineKeyboardButton("Option 3", callback_data='3')]]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    update.message.reply_text('Please choose:', reply_markup=reply_markup)
+    """Send a deep-linked URL when the command /start is issued."""
+    bot = context.bot
+    url = helpers.create_deep_linked_url(bot.get_me().username, CHECK_THIS_OUT, group=True)
+    text = "Feel free to tell your friends about it:\n\n" + url
+    update.message.reply_text(text)
 
 
-def button(update, context):
-    query = update.callback_query
+def deep_linked_level_1(update, context):
+    """Reached through the CHECK_THIS_OUT payload"""
+    bot = context.bot
+    url = helpers.create_deep_linked_url(bot.get_me().username, SO_COOL)
+    text = "Awesome, you just accessed hidden functionality! " \
+           " Now let's get back to the private chat."
+    keyboard = InlineKeyboardMarkup.from_button(
+        InlineKeyboardButton(text='Continue here!', url=url)
+    )
+    update.message.reply_text(text, reply_markup=keyboard)
 
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-    query.answer()
 
-    query.edit_message_text(text="Selected option: {}".format(query.data))
+def deep_linked_level_2(update, context):
+    """Reached through the SO_COOL payload"""
+    bot = context.bot
+    url = helpers.create_deep_linked_url(bot.get_me().username, USING_ENTITIES)
+    text = "You can also mask the deep-linked URLs as links: " \
+           "[▶️ CLICK HERE]({}).".format(url)
+    update.message.reply_text(text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def help_command(update, context):
-    update.message.reply_text("Use /start to test this bot.")
+def deep_linked_level_3(update, context):
+    """Reached through the USING_ENTITIES payload"""
+    payload = context.args
+    update.message.reply_text("Congratulations! This is as deep as it gets 👏🏻\n\n"
+                              "The payload was: {}".format(payload))
 
 
 def main():
+    """Start the bot."""
     # Create the Updater and pass it your bot's token.
-    # Make sure to set use_context=True to use the new context based callbacks
-    # Post version 12 this will no longer be necessary
     updater = Updater("1286086072:AAGXY-EQBlQakoDjrYC97nUKteZosM91NHE", use_context=True)
 
-    updater.dispatcher.add_handler(CommandHandler('start', start))
-    updater.dispatcher.add_handler(CallbackQueryHandler(button))
-    updater.dispatcher.add_handler(CommandHandler('help', help_command))
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # More info on what deep linking actually is (read this first if it's unclear to you):
+    # https://core.telegram.org/bots#deep-linking
+
+    # Register a deep-linking handler
+    dp.add_handler(CommandHandler("start", deep_linked_level_1, Filters.regex(CHECK_THIS_OUT)))
+
+    # This one works with a textual link instead of an URL
+    dp.add_handler(CommandHandler("start", deep_linked_level_2, Filters.regex(SO_COOL)))
+
+    # We can also pass on the deep-linking payload
+    dp.add_handler(CommandHandler("start",
+                                  deep_linked_level_3,
+                                  Filters.regex(USING_ENTITIES),
+                                  pass_args=True))
+
+    # Make sure the deep-linking handlers occur *before* the normal /start handler.
+    dp.add_handler(CommandHandler("start", start))
 
     # Start the Bot
     updater.start_polling()
 
-    # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
 
