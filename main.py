@@ -1,7 +1,3 @@
-"""
-This Example will show you how to use register_next_step handler.
-"""
-
 import telebot
 from telebot import types
 
@@ -9,34 +5,29 @@ API_TOKEN = '1286086072:AAGXY-EQBlQakoDjrYC97nUKteZosM91NHE'
 
 bot = telebot.TeleBot(API_TOKEN)
 
-user_dict = {}
+source_markup = types.ReplyKeyboardMarkup()
+source_markup_btn1 = types.KeyboardButton("Бронирование")
+source_markup_btn2 = types.KeyboardButton("Цены")
+source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
+source_markup.row(source_markup_btn1,source_markup_btn2)
+source_markup.row(source_markup_btn3)
 
 
-class User:
-    def __init__(self, name):
-        self.name = name
-        self.age = None
-        self.sex = None
-
-
-# Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=['start'])
 def send_welcome(message):
     msg = bot.reply_to(message, """\
-Hi there, I am Example bot.
-What's your name?
-""")
-    bot.register_next_step_handler(msg, process_name_step)
+    Приветсвую в телеграм боте why_not. 
+    Продолжая использовать данный бот,
+    Вы подтверждаете тем сам мы что вам более 18 лет.
+    """)
+    bot.register_next_step_handler(msg, process_name_step, source_markup)
 
 
 def process_name_step(message):
     try:
         chat_id = message.chat.id
-        name = message.text
-        user = User(name)
-        user_dict[chat_id] = user
-        msg = bot.reply_to(message, 'How old are you?')
-        bot.register_next_step_handler(msg, process_age_step)
+        msg = bot.reply_to(chat_id, 'Выберите пункт')
+        bot.register_next_step_handler(msg, process_age_step, chat_id)
     except Exception as e:
         bot.reply_to(message, 'oooops')
 
@@ -49,8 +40,6 @@ def process_age_step(message):
             msg = bot.reply_to(message, 'Age should be a number. How old are you?')
             bot.register_next_step_handler(msg, process_age_step)
             return
-        user = user_dict[chat_id]
-        user.age = age
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         markup.add('Male', 'Female')
         msg = bot.reply_to(message, 'What is your gender', reply_markup=markup)
@@ -63,7 +52,6 @@ def process_sex_step(message):
     try:
         chat_id = message.chat.id
         sex = message.text
-        user = user_dict[chat_id]
         if (sex == u'Male') or (sex == u'Female'):
             user.sex = sex
         else:
