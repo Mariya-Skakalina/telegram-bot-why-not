@@ -1,16 +1,32 @@
+
+# This example show how to use inline keyboards and process button presses
 import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-bot = telebot.TeleBot("1286086072:AAGXY-EQBlQakoDjrYC97nUKteZosM91NHE", parse_mode=None)
+TELEGRAM_TOKEN = '<TOKEN>'
 
-
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-	bot.reply_to(message, "Howdy, how are you doing?")
+bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
 
-@bot.message_handler(func=lambda m: True)
-def echo_all(message):
-	bot.reply_to(message, message.text)
+def gen_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 2
+    markup.add(InlineKeyboardButton("Yes", callback_data="cb_yes"),
+                               InlineKeyboardButton("No", callback_data="cb_no"))
+    return markup
 
 
-bot.polling()
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    if call.data == "cb_yes":
+        bot.answer_callback_query(call.id, "Answer is Yes")
+    elif call.data == "cb_no":
+        bot.answer_callback_query(call.id, "Answer is No")
+
+
+@bot.message_handler(func=lambda message: True)
+def message_handler(message):
+    bot.send_message(message.chat.id, "Yes/no?", reply_markup=gen_markup())
+
+
+bot.polling(none_stop=True)
