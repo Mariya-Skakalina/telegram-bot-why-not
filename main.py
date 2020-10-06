@@ -1,32 +1,80 @@
+"""
+This Example will show you how to use register_next_step handler.
+"""
 
-# This example show how to use inline keyboards and process button presses
 import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot import types
 
-TELEGRAM_TOKEN = '<TOKEN>'
+API_TOKEN = '<api_token>'
 
-bot = telebot.TeleBot(TELEGRAM_TOKEN)
+bot = telebot.TeleBot(API_TOKEN)
 
-
-def gen_markup():
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 2
-    markup.add(InlineKeyboardButton("Yes", callback_data="cb_yes"),
-                               InlineKeyboardButton("No", callback_data="cb_no"))
-    return markup
+user_dict = {}
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
-    if call.data == "cb_yes":
-        bot.answer_callback_query(call.id, "Answer is Yes")
-    elif call.data == "cb_no":
-        bot.answer_callback_query(call.id, "Answer is No")
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.age = None
+        self.sex = None
 
 
-@bot.message_handler(func=lambda message: True)
-def message_handler(message):
-    bot.send_message(message.chat.id, "Yes/no?", reply_markup=gen_markup())
+# Handle '/start' and '/help'
+@bot.message_handler(commands=['help', 'start'])
+def send_welcome(message):
+    msg = bot.reply_to(message, """\
+Hi there, I am Example bot.
+What's your name?
+""")
+    bot.register_next_step_handler(msg, process_name_step)
 
 
-bot.polling(none_stop=True)
+def process_name_step(message):
+    try:
+        chat_id = message.chat.id
+        name = message.text
+        user = User(name)
+        user_dict[chat_id] = user
+        msg = bot.reply_to(message, 'How old are you?')
+        bot.register_next_step_handler(msg, process_age_step)
+    except Exception as e:
+        bot.reply_to(message, 'oooops')
+
+
+def process_age_step(message):
+    try:
+        chat_id = message.chat.id
+        age = message.text
+        if not age.isdigit():
+            msg = bot.reply_to(message, 'Age should be a number. How old are you?')
+            bot.register_next_step_handler(msg, process_age_step)
+            return
+        user = user_dict[chat_id]
+        user.age = age
+        markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+        markup.add('Male', 'Female')
+        msg = bot.reply_to(message, 'What is your gender', reply_markup=markup)
+        bot.register_next_step_handler(msg, process_sex_step)
+    except Exception as e:
+        bot.reply_to(message, 'oooops')
+
+
+def process_sex_step(message):
+    try:
+        chat_id = message.chat.id
+        sex = message.text
+        user = user_dict[chat_id]
+        if (sex == u'Male') or (sex == u'Female'):
+            user.sex = sex
+        else:
+            raise Exception()
+        bot.send_message(chat_id, 'Nice to meet you ' + user.name + '\n Age:' + str(user.age) + '\n Sex:' + user.sex)
+    except Exception as e:
+        bot.reply_to(message, 'oooops')
+
+
+bot.enable_save_next_step_handlers(delay=2)
+
+bot.load_next_step_handlers()
+
+bot.polling()
