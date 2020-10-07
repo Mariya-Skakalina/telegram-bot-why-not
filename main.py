@@ -24,6 +24,7 @@ def send_welcome(message):
 
 
 def name(message):
+    print(message.text)
     if message.text == 'Цены':
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
         keyboard_btn1 = types.KeyboardButton("Кальян")
