@@ -32,7 +32,23 @@ def name(message):
         keyboard.row(keyboard_btn1, keyboard_btn2)
         keyboard.row(keyboard_btn3)
         ngs = bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, prc)
+        bot.register_next_step_handler(ngs, price)
+    elif message.text == "Бронирование":
+        keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+        keyboard_btn1 = types.KeyboardButton("16:00")
+        keyboard_btn2 = types.KeyboardButton("17:00")
+        keyboard_btn3 = types.KeyboardButton("18:00")
+        keyboard_btn4 = types.KeyboardButton("19:00")
+        keyboard_btn5 = types.KeyboardButton("20:00")
+        keyboard_btn6 = types.KeyboardButton("21:00")
+        keyboard_btn7 = types.KeyboardButton("22:00")
+        keyboard_btn8 = types.KeyboardButton("23:00")
+        keyboard.row(keyboard_btn1, keyboard_btn2, keyboard_btn3, keyboard_btn4)
+        keyboard.row(keyboard_btn5, keyboard_btn6, keyboard_btn7, keyboard_btn8)
+        ngs = bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, booking)
+    elif message.text == "Позвать кальянщика":
+        bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
 
 
 def prc(mes):
@@ -40,8 +56,45 @@ def prc(mes):
         bot.send_message(mes.chat.id, "Цена кальяна 600 рублей")
     elif mes.text == "Пробка":
         bot.send_message(mes.chat.id, "Цена пробки 200 рублей")
-    if mes.text == "Кальян с приставкой":
+    elif mes.text == "Кальян с приставкой":
         bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
+
+
+def booking(mes):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard_btn1 = types.KeyboardButton("1")
+    keyboard_btn2 = types.KeyboardButton("2")
+    keyboard_btn3 = types.KeyboardButton("3")
+    keyboard_btn4 = types.KeyboardButton("4")
+    keyboard_btn5 = types.KeyboardButton("5 cтол с приставкой")
+    keyboard_btn6 = types.KeyboardButton("6")
+    keyboard.row(keyboard_btn1, keyboard_btn2, keyboard_btn3)
+    keyboard.row(keyboard_btn4, keyboard_btn5, keyboard_btn6)
+    if mes.text == "16:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
+    elif mes.text == "18:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
+    elif mes.text == "19:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
+    elif mes.text == "20:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
+    elif mes.text == "21:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
+    elif mes.text == "22:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
+    elif mes.text == "23:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
+
+
+def table(message):
+    bot.delete_message(message.chat.id, "Стол заброанирован")
 
 
 bot.polling()
