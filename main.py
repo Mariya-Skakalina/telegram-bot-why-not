@@ -51,7 +51,7 @@ def name(message):
         bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
 
 
-def prc(mes):
+def price(mes):
     if mes.text == "Кальян":
         bot.send_message(mes.chat.id, "Цена кальяна 600 рублей")
     elif mes.text == "Пробка":
