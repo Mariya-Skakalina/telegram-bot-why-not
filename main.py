@@ -19,8 +19,8 @@ def send_welcome(message):
     Приветсвую в телеграм боте why_not. 
 Продолжая использовать данный бот,
 Вы подтверждаете тем сам мы что вам более 18 лет.
-    """)
-    bot.register_next_step_handler(msg, source_markup)
+    """, source_markup)
+    # bot.register_next_step_handler(msg, source_markup)
 
 
 bot.polling()
