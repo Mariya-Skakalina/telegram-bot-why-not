@@ -15,7 +15,7 @@ source_markup.row(source_markup_btn3)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    msg = bot.reply_to(message.chat.id, """\
+    bot.reply_to(message.chat.id, """\
     Приветсвую в телеграм боте why_not. 
 Продолжая использовать данный бот,
 Вы подтверждаете тем сам мы что вам более 18 лет.
