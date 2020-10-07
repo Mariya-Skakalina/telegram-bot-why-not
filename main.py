@@ -32,7 +32,7 @@ def name(message):
         keyboard_btn3 = types.KeyboardButton("Кальян с приставкой")
         keyboard.row(keyboard_btn1, keyboard_btn2)
         keyboard.row(keyboard_btn3)
-        bot.send_message(message.chat.id, 'Цены на кальян')
+        bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=keyboard)
 
 
 bot.polling()
