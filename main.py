@@ -24,7 +24,6 @@ def send_welcome(message):
 
 
 def name(message):
-    print(message.text)
     if message.text == 'Цены':
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
         keyboard_btn1 = types.KeyboardButton("Кальян")
@@ -32,7 +31,17 @@ def name(message):
         keyboard_btn3 = types.KeyboardButton("Кальян с приставкой")
         keyboard.row(keyboard_btn1, keyboard_btn2)
         keyboard.row(keyboard_btn3)
-        bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=keyboard)
+        ngs = bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, prc)
+
+
+def prc(mes):
+    if mes.text == "Кальян":
+        bot.send_message(mes.chat.id, "Цена кальяна 600 рублей")
+    elif mes.text == "Пробка":
+        bot.send_message(mes.chat.id, "Цена пробки 200 рублей")
+    if mes.text == "Кальян с приставкой":
+        bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
 
 
 bot.polling()
