@@ -15,11 +15,11 @@ source_markup.row(source_markup_btn3)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    msg = bot.reply_to(message, """\
+    msg = bot.reply_to(message.chat.id, """\
     Приветсвую в телеграм боте why_not. 
 Продолжая использовать данный бот,
 Вы подтверждаете тем сам мы что вам более 18 лет.
-    """, source_markup)
+    """, reply_markup=source_markup)
     # bot.register_next_step_handler(msg, source_markup)
 
 
