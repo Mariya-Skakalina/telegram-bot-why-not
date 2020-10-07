@@ -97,7 +97,7 @@ def booking(mes):
 
 
 def table(message):
-    bot.delete_message(message.chat.id, "Стол заброанирован")
+    bot.send_message(message.chat.id, "Стол заброанирован")
 
 
 bot.polling()
