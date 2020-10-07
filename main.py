@@ -73,6 +73,9 @@ def booking(mes):
     if mes.text == "16:00":
         ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
         bot.register_next_step_handler(ngs, table)
+    elif mes.text == "17:00":
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
+        bot.register_next_step_handler(ngs, table)
     elif mes.text == "18:00":
         ngs = bot.send_message(mes.chat.id, 'Выберите стол', reply_markup=keyboard)
         bot.register_next_step_handler(ngs, table)
