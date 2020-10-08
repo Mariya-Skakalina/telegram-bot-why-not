@@ -9,7 +9,7 @@ source_markup = types.ReplyKeyboardMarkup()
 source_markup_btn1 = types.KeyboardButton("Бронирование")
 source_markup_btn2 = types.KeyboardButton("Цены")
 source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
-source_markup.row(source_markup_btn1,source_markup_btn2)
+source_markup.row(source_markup_btn1, source_markup_btn2)
 source_markup.row(source_markup_btn3)
 
 
@@ -54,6 +54,9 @@ def name(message):
     elif message.text == "Позвать кальянщика":
         ngs = bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
         bot.register_next_step_handler(ngs, name)
+    else:
+        msg = bot.send_message(message.chat.id,"", reply_markup=source_markup)
+        bot.register_next_step_handler(msg, name)
 
 
 def price(mes):
