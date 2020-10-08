@@ -55,7 +55,7 @@ def name(message):
         ngs = bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
         bot.register_next_step_handler(ngs, name)
     else:
-        msg = bot.send_message(message.chat.id,"", reply_markup=source_markup)
+        msg = bot.send_message(message.chat.id, "нащад", reply_markup=source_markup)
         bot.register_next_step_handler(msg, name)
 
 
