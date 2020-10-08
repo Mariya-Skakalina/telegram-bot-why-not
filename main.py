@@ -54,7 +54,7 @@ def name(message):
     elif message.text == "Позвать кальянщика":
         ngs = bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
         bot.register_next_step_handler(ngs, name)
-    else:
+    elif message.text == "Назад":
         msg = bot.send_message(message.chat.id, "нащад", reply_markup=source_markup)
         bot.register_next_step_handler(msg, name)
 
