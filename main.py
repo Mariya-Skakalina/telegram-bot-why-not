@@ -67,7 +67,8 @@ def price(mes):
         ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
         bot.register_next_step_handler(ngs, name)
     elif mes.text == "Назад":
-        bot.register_next_step_handler(mes.chat.id, name)
+        ngs = bot.send_message(mes.chat.id, "Назад")
+        bot.register_next_step_handler(ngs, name)
 
 
 def booking(mes):
@@ -105,7 +106,8 @@ def booking(mes):
         ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
         bot.register_next_step_handler(ngs, table)
     elif mes.text == "Назад":
-        bot.register_next_step_handler(mes.chat.id, name)
+        ngs = bot.send_message(mes.chat.id, "Назад")
+        bot.register_next_step_handler(ngs, name)
 
 
 def table(message):
