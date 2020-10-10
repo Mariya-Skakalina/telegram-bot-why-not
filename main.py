@@ -70,7 +70,7 @@ def price(mes):
         ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
         bot.register_next_step_handler(ngs, price)
     elif mes.text == "Назад":
-        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=source_markup)
+        ngs = bot.send_message(mes.chat.id, "Назад")
         bot.register_next_step_handler(ngs, send_welcome)
 
 
