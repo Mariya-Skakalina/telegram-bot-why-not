@@ -71,7 +71,7 @@ def price(mes):
         bot.register_next_step_handler(ngs, price)
     elif mes.text == "Назад":
         ngs = bot.send_message(mes.chat.id, "Назад")
-        bot.register_next_step_handler(ngs, send_welcome)
+        bot.register_next_step_handler(ngs, name)
 
 
 def booking(mes):
