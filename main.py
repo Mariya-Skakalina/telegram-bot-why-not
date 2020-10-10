@@ -23,21 +23,6 @@ def send_welcome(message):
     bot.register_next_step_handler(msg, name)
 
 
-keyboards = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-keyboards_btn1 = types.KeyboardButton("16:00")
-keyboards_btn2 = types.KeyboardButton("17:00")
-keyboards_btn3 = types.KeyboardButton("18:00")
-keyboards_btn4 = types.KeyboardButton("19:00")
-keyboards_btn5 = types.KeyboardButton("20:00")
-keyboards_btn6 = types.KeyboardButton("21:00")
-keyboards_btn7 = types.KeyboardButton("22:00")
-keyboards_btn8 = types.KeyboardButton("23:00")
-keyboards_btn9 = types.KeyboardButton("Назад")
-keyboards.row(keyboards_btn1, keyboards_btn2, keyboards_btn3, keyboards_btn4)
-keyboards.row(keyboards_btn5, keyboards_btn6, keyboards_btn7, keyboards_btn8)
-keyboards.row(keyboards_btn9)
-
-
 def name(message):
     if message.text == 'Цены':
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -51,6 +36,19 @@ def name(message):
         ngs = bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=keyboard)
         bot.register_next_step_handler(ngs, price)
     elif message.text == "Бронирование":
+        keyboards = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        keyboards_btn1 = types.KeyboardButton("16:00")
+        keyboards_btn2 = types.KeyboardButton("17:00")
+        keyboards_btn3 = types.KeyboardButton("18:00")
+        keyboards_btn4 = types.KeyboardButton("19:00")
+        keyboards_btn5 = types.KeyboardButton("20:00")
+        keyboards_btn6 = types.KeyboardButton("21:00")
+        keyboards_btn7 = types.KeyboardButton("22:00")
+        keyboards_btn8 = types.KeyboardButton("23:00")
+        keyboards_btn9 = types.KeyboardButton("Назад")
+        keyboards.row(keyboards_btn1, keyboards_btn2, keyboards_btn3, keyboards_btn4)
+        keyboards.row(keyboards_btn5, keyboards_btn6, keyboards_btn7, keyboards_btn8)
+        keyboards.row(keyboards_btn9)
         ngs = bot.send_message(message.chat.id, 'Выберите время:', reply_markup=keyboards)
         bot.register_next_step_handler(ngs, booking)
     elif message.text == "Позвать кальянщика":
