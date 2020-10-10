@@ -115,7 +115,7 @@ def booking(mes):
 
 def table(message):
     ngs = bot.send_message(message.chat.id, "Стол заброанирован")
-    bot.register_next_step_handler(ngs, send_welcome)
+    bot.register_next_step_handler(ngs, send_welcome())
 
 
 bot.polling()
