@@ -112,7 +112,7 @@ def booking(mes):
         bot.register_next_step_handler(ngs, table)
     elif mes.text == "Назад":
         ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=source_markup)
-        bot.register_next_step_handler(ngs, name('Бронирование'))
+        bot.register_next_step_handler(ngs, name)
 
 
 def table(message):
