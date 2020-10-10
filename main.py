@@ -62,15 +62,15 @@ def name(message):
 def price(mes):
     if mes.text == "Кальян":
         ngs = bot.send_message(mes.chat.id, "Цена кальяна 600 рублей")
-        bot.register_next_step_handler(ngs, send_welcome)
+        bot.register_next_step_handler(ngs, price)
     elif mes.text == "Пробка":
         ngs = bot.send_message(mes.chat.id, "Цена пробки 200 рублей")
-        bot.register_next_step_handler(ngs, send_welcome)
+        bot.register_next_step_handler(ngs, price)
     elif mes.text == "Кальян с приставкой":
         ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
-        bot.register_next_step_handler(ngs, send_welcome)
+        bot.register_next_step_handler(ngs, price)
     elif mes.text == "Назад":
-        ngs = bot.send_message(mes.chat.id, "Назад")
+        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=source_markup)
         bot.register_next_step_handler(ngs, send_welcome)
 
 
