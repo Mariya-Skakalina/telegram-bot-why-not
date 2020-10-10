@@ -56,22 +56,22 @@ def name(message):
         bot.register_next_step_handler(ngs, name)
     elif message.text == "Назад":
         msg = bot.send_message(message.chat.id, "нащад", reply_markup=source_markup)
-        bot.register_next_step_handler(msg, name)
+        bot.register_next_step_handler(msg, send_welcome)
 
 
 def price(mes):
     if mes.text == "Кальян":
         ngs = bot.send_message(mes.chat.id, "Цена кальяна 600 рублей")
-        bot.register_next_step_handler(ngs, name)
+        bot.register_next_step_handler(ngs, send_welcome)
     elif mes.text == "Пробка":
         ngs = bot.send_message(mes.chat.id, "Цена пробки 200 рублей")
-        bot.register_next_step_handler(ngs, name)
+        bot.register_next_step_handler(ngs, send_welcome)
     elif mes.text == "Кальян с приставкой":
         ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
-        bot.register_next_step_handler(ngs, name)
+        bot.register_next_step_handler(ngs, send_welcome)
     elif mes.text == "Назад":
         ngs = bot.send_message(mes.chat.id, "Назад")
-        bot.register_next_step_handler(ngs, name)
+        bot.register_next_step_handler(ngs, send_welcome)
 
 
 def booking(mes):
@@ -110,12 +110,12 @@ def booking(mes):
         bot.register_next_step_handler(ngs, table)
     elif mes.text == "Назад":
         ngs = bot.send_message(mes.chat.id, "Назад")
-        bot.register_next_step_handler(ngs, name)
+        bot.register_next_step_handler(ngs, send_welcome)
 
 
 def table(message):
     ngs = bot.send_message(message.chat.id, "Стол заброанирован")
-    bot.register_next_step_handler(ngs, name)
+    bot.register_next_step_handler(ngs, send_welcome)
 
 
 bot.polling()
