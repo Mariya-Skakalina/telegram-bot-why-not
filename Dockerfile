@@ -9,4 +9,4 @@ WORKDIR /app
 COPY . /app
 
 CMD ["uwsgi", "--http", "0.0.0.0:80", "--wsgi-file", "/app/main.py", \
-    "--callable", "app", "--stats", "0.0.0.0:81"]
+    "--callable", "app", "--stats", "0.0.0.0:8443"]
