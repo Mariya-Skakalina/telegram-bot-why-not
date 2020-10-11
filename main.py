@@ -1,9 +1,37 @@
 import telebot
+import cherrypy
 from telebot import types
+
 
 API_TOKEN = '1286086072:AAGXY-EQBlQakoDjrYC97nUKteZosM91NHE'
 
+WEBHOOK_HOST = '178.154.250.224'
+WEBHOOK_PORT = 8000
+WEBHOOK_LISTEN = '0.0.0.0'
+
+WEBHOOK_SSL_CERT = '../webhook_cert.pemy'  # Путь к сертификату
+WEBHOOK_SSL_PRIV = '../webhook_pkey.pem'  # Путь к приватному ключу
+
+WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
+WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
+
+
 bot = telebot.TeleBot(API_TOKEN)
+
+
+class WebhookServer(object):
+    @cherrypy.expose
+    def index(self):
+        if 'content-length' in cherrypy.request.headers and \
+           'content-type' in cherrypy.request.headers and \
+           cherrypy.request.headers['content-type'] == 'application/json':
+            length = int(cherrypy.request.headers['content-length'])
+            json_string = cherrypy.request.body.read(length).decode("utf-8")
+            update = telebot.types.Update.de_json(json_string)
+            bot.process_new_updates([update])
+            return ''
+        else:
+            raise cherrypy.HTTPError(403)
 
 source_markup = types.ReplyKeyboardMarkup()
 source_markup_btn1 = types.KeyboardButton("Бронирование")
@@ -118,4 +146,22 @@ def table(message):
     bot.register_next_step_handler(msg, name)
 
 
-bot.polling()
+bot.remove_webhook()
+
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH, certificate=open(WEBHOOK_SSL_CERT, 'r'))
+
+# Disable CherryPy requests log
+access_log = cherrypy.log.access_log
+for handler in tuple(access_log.handlers):
+    access_log.removeHandler(handler)
+
+
+cherrypy.config.update({
+    'server.socket_host': WEBHOOK_LISTEN,
+    'server.socket_port': WEBHOOK_PORT,
+    'server.ssl_module': 'builtin',
+    'server.ssl_certificate': WEBHOOK_SSL_CERT,
+    'server.ssl_private_key': WEBHOOK_SSL_PRIV
+})
+
+cherrypy.quickstart(WebhookServer(), WEBHOOK_URL_PATH, {'/': {}})
