@@ -6,11 +6,11 @@ from telebot import types
 API_TOKEN = '1286086072:AAGXY-EQBlQakoDjrYC97nUKteZosM91NHE'
 
 WEBHOOK_HOST = '178.154.250.224'
-WEBHOOK_PORT = 8000
+WEBHOOK_PORT = 8443
 WEBHOOK_LISTEN = '0.0.0.0'
 
-WEBHOOK_SSL_CERT = '../webhook_cert.pemy'  # Путь к сертификату
-WEBHOOK_SSL_PRIV = '../webhook_pkey.pem'  # Путь к приватному ключу
+WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Путь к сертификату
+WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Путь к приватному ключу
 
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
@@ -33,16 +33,15 @@ class WebhookServer(object):
         else:
             raise cherrypy.HTTPError(403)
 
-source_markup = types.ReplyKeyboardMarkup()
-source_markup_btn1 = types.KeyboardButton("Бронирование")
-source_markup_btn2 = types.KeyboardButton("Цены")
-source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
-source_markup.row(source_markup_btn1, source_markup_btn2)
-source_markup.row(source_markup_btn3)
-
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    source_markup = types.ReplyKeyboardMarkup()
+    source_markup_btn1 = types.KeyboardButton("Бронирование")
+    source_markup_btn2 = types.KeyboardButton("Цены")
+    source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
+    source_markup.row(source_markup_btn1, source_markup_btn2)
+    source_markup.row(source_markup_btn3)
     msg = bot.send_message(message.chat.id, """\
     Приветсвую в телеграм боте why_not. 
 Продолжая использовать данный бот,
@@ -52,7 +51,10 @@ def send_welcome(message):
 
 
 def name(message):
-    if message.text == 'Цены':
+    print(message.text)
+    if message.text == '/start':
+        send_welcome(message)
+    elif message.text == 'Цены':
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
         keyboard_btn1 = types.KeyboardButton("Кальян")
         keyboard_btn2 = types.KeyboardButton("Пробка")
@@ -83,6 +85,12 @@ def name(message):
         ngs = bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
         bot.register_next_step_handler(ngs, name)
     elif message.text == "Назад":
+        source_markup = types.ReplyKeyboardMarkup()
+        source_markup_btn1 = types.KeyboardButton("Бронирование")
+        source_markup_btn2 = types.KeyboardButton("Цены")
+        source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
+        source_markup.row(source_markup_btn1, source_markup_btn2)
+        source_markup.row(source_markup_btn3)
         msg = bot.send_message(message.chat.id, "Назад", reply_markup=source_markup)
         bot.register_next_step_handler(msg, send_welcome)
 
@@ -98,6 +106,12 @@ def price(mes):
         ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
         bot.register_next_step_handler(ngs, price)
     elif mes.text == "Назад":
+        source_markup = types.ReplyKeyboardMarkup()
+        source_markup_btn1 = types.KeyboardButton("Бронирование")
+        source_markup_btn2 = types.KeyboardButton("Цены")
+        source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
+        source_markup.row(source_markup_btn1, source_markup_btn2)
+        source_markup.row(source_markup_btn3)
         ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=source_markup)
         bot.register_next_step_handler(ngs, name)
 
@@ -137,11 +151,23 @@ def booking(mes):
         ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
         bot.register_next_step_handler(ngs, table)
     elif mes.text == "Назад":
+        source_markup = types.ReplyKeyboardMarkup()
+        source_markup_btn1 = types.KeyboardButton("Бронирование")
+        source_markup_btn2 = types.KeyboardButton("Цены")
+        source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
+        source_markup.row(source_markup_btn1, source_markup_btn2)
+        source_markup.row(source_markup_btn3)
         ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=source_markup)
         bot.register_next_step_handler(ngs, name)
 
 
 def table(message):
+    source_markup = types.ReplyKeyboardMarkup()
+    source_markup_btn1 = types.KeyboardButton("Бронирование")
+    source_markup_btn2 = types.KeyboardButton("Цены")
+    source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
+    source_markup.row(source_markup_btn1, source_markup_btn2)
+    source_markup.row(source_markup_btn3)
     msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=source_markup)
     bot.register_next_step_handler(msg, name)
 
