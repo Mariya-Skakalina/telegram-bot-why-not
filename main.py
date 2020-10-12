@@ -36,14 +36,14 @@ class WebhookServer(object):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    source_markup = types.ReplyKeyboardMarkup()
-    source_markup.row(*[types.KeyboardButton(name) for name in ['Бронирование', 'Цены']])
-    source_markup.row(*[types.KeyboardButton(name) for name in ['Позвать кальянщика']])
+    keyboard = types.ReplyKeyboardMarkup()
+    keyboard.row(*[types.KeyboardButton(name) for name in ['Бронирование', 'Цены']])
+    keyboard.row(*[types.KeyboardButton(name) for name in ['Позвать кальянщика']])
     msg = bot.send_message(message.chat.id, """\
     Приветсвую в телеграм боте why_not. 
 Продолжая использовать данный бот,
 Вы подтверждаете тем сам мы что вам более 18 лет.
-    """, reply_markup=source_markup)
+    """, reply_markup=keyboard)
     bot.register_next_step_handler(msg, menu)
 
 
@@ -80,15 +80,12 @@ def menu(message):
     elif message.text == "Позвать кальянщика":
         ngs = bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
         bot.register_next_step_handler(ngs, menu)
-    elif message.text == "Назад":
-        source_markup = types.ReplyKeyboardMarkup()
-        source_markup_btn1 = types.KeyboardButton("Бронирование")
-        source_markup_btn2 = types.KeyboardButton("Цены")
-        source_markup_btn3 = types.KeyboardButton("Позвать кальянщика")
-        source_markup.row(source_markup_btn1, source_markup_btn2)
-        source_markup.row(source_markup_btn3)
-        msg = bot.send_message(message.chat.id, "Назад", reply_markup=source_markup)
-        bot.register_next_step_handler(msg, send_welcome)
+    # elif message.text == "Назад":
+    #     keyboard = types.ReplyKeyboardMarkup()
+    #     keyboard.row(*[types.KeyboardButton(name) for name in ['Бронирование', 'Цены']])
+    #     keyboard.row(*[types.KeyboardButton(name) for name in ['Позвать кальянщика']])
+    #     msg = bot.send_message(message.chat.id, "Назад", reply_markup=keyboard)
+    #     bot.register_next_step_handler(msg, send_welcome)
 
 
 def price(mes):
