@@ -32,14 +32,7 @@ class WebhookServer(object):
             raise cherrypy.HTTPError(403)
 
 
-def keyboards():
-    keyboard = types.ReplyKeyboardMarkup()
-    keyboard.row(*[types.KeyboardButton(name) for name in ['Бронирование', 'Цены']])
-    keyboard.row(*[types.KeyboardButton(name) for name in ['Позвать кальянщика']])
-    return keyboard
-
-
-def dpr(*args):
+def keyboards(*args):
     keyboard = types.ReplyKeyboardMarkup()
     for key in args:
         keyboard.row(*[types.KeyboardButton(name) for name in key])
@@ -53,7 +46,7 @@ def send_welcome(message):
     Приветсвую в телеграм боте why_not. 
 Продолжая использовать данный бот,
 Вы подтверждаете тем сам мы что вам более 18 лет.
-    """, reply_markup=keyboards())
+    """, reply_markup=keyboards(['Бронирование', 'Цены'], ['Позвать кальянщика']))
     bot.register_next_step_handler(msg, menu)
 
 
@@ -62,19 +55,15 @@ def menu(message):
         send_welcome(message)
     elif message.text == 'Цены':
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        # keyboard.row(*[types.KeyboardButton(name) for name in ['Кальян', 'Пробка']])
-        # keyboard.row(*[types.KeyboardButton(name) for name in ['Кальян с приставкой']])
-        # keyboard.row(*[types.KeyboardButton(name) for name in ['Назад']])
-        ngs = bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=dpr(['Кальян', 'Пробка'],
-                                                                                   ['Кальян с приставкой'],
-                                                                                   ['Назад']))
+        ngs = bot.send_message(message.chat.id, 'Цены на кальян', reply_markup=keyboards(['Кальян', 'Пробка'],
+                                                                                         ['Кальян с приставкой'],
+                                                                                         ['Назад']))
         bot.register_next_step_handler(ngs, price)
     elif message.text == "Бронирование":
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        keyboard.row(*[types.KeyboardButton(name) for name in ['16:00', '17:00', '18:00', '19:00']])
-        keyboard.row(*[types.KeyboardButton(name) for name in ['20:00', '21:00', '22:00', '23:00']])
-        keyboard.row(*[types.KeyboardButton(name) for name in ['Назад']])
-        ngs = bot.send_message(message.chat.id, 'Выберите время:', reply_markup=keyboard)
+        ngs = bot.send_message(message.chat.id, 'Выберите время:', reply_markup=keyboards(['16:00', '17:00', '18:00', '19:00'],
+                                                                                          ['20:00', '21:00', '22:00', '23:00'],
+                                                                                          ['Назад']))
         bot.register_next_step_handler(ngs, booking)
     elif message.text == "Позвать кальянщика":
         ngs = bot.send_message(message.chat.id, "Кальянщик придет к вам как только освободится")
@@ -92,25 +81,26 @@ def price(mes):
         ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
         bot.register_next_step_handler(ngs, price)
     elif mes.text == "Назад":
-        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards())
+        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards(['Бронирование', 'Цены'], ['Позвать кальянщика']))
         bot.register_next_step_handler(ngs, menu)
 
 
 def booking(mes):
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.row(*[types.KeyboardButton(name) for name in ['1', '2', '3']])
-    keyboard.row(*[types.KeyboardButton(name) for name in ['4', '5 cтол с приставкой', '6']])
     if (mes.text == "16:00" or mes.text == "17:00" or mes.text == "17:00" or mes.text == "18:00"
-            or mes.text == "19:00" or mes.text == "20:00" or mes.text == "21:00" or mes.text == "22:00" or mes.text == "23:00"):
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+            or mes.text == "19:00" or mes.text == "20:00" or mes.text == "21:00" or mes.text == "22:00"
+            or mes.text == "23:00"):
+        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboards(['1', '2', '3'],
+                                                                                     ['4', '5 cтол с приставкой', '6']))
         bot.register_next_step_handler(ngs, table)
     elif mes.text == "Назад":
-        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards())
+        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards(['Бронирование', 'Цены'],
+                                                                            ['Позвать кальянщика']))
         bot.register_next_step_handler(ngs, menu)
 
 
 def table(message):
-    msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=keyboards())
+    msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=keyboards(['Бронирование', 'Цены'],
+                                                                                         ['Позвать кальянщика']))
     bot.register_next_step_handler(msg, menu)
 
 
