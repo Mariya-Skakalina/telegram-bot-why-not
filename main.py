@@ -83,10 +83,7 @@ def price(mes):
         ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
         bot.register_next_step_handler(ngs, price)
     elif mes.text == "Назад":
-        keyboard = types.ReplyKeyboardMarkup()
-        keyboard.row(*[types.KeyboardButton(name) for name in ['Бронирование', 'Цены']])
-        keyboard.row(*[types.KeyboardButton(name) for name in ['Позвать кальянщика']])
-        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboard)
+        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards())
         bot.register_next_step_handler(ngs, menu)
 
 
@@ -119,18 +116,12 @@ def booking(mes):
         ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
         bot.register_next_step_handler(ngs, table)
     elif mes.text == "Назад":
-        keyboard = types.ReplyKeyboardMarkup()
-        keyboard.row(*[types.KeyboardButton(name) for name in ['Бронирование', 'Цены']])
-        keyboard.row(*[types.KeyboardButton(name) for name in ['Позвать кальянщика']])
-        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboard)
+        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards())
         bot.register_next_step_handler(ngs, menu)
 
 
 def table(message):
-    keyboard = types.ReplyKeyboardMarkup()
-    keyboard.row(*[types.KeyboardButton(name) for name in ['Бронирование', 'Цены']])
-    keyboard.row(*[types.KeyboardButton(name) for name in ['Позвать кальянщика']])
-    msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=source_markup)
+    msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=keyboards())
     bot.register_next_step_handler(msg, menu)
 
 
@@ -138,7 +129,7 @@ bot.remove_webhook()
 
 bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH, certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
-# Disable CherryPy requests log
+
 access_log = cherrypy.log.access_log
 for handler in tuple(access_log.handlers):
     access_log.removeHandler(handler)
