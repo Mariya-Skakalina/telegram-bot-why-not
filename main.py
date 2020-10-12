@@ -91,30 +91,31 @@ def booking(mes):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.row(*[types.KeyboardButton(name) for name in ['1', '2', '3']])
     keyboard.row(*[types.KeyboardButton(name) for name in ['4', '5 cтол с приставкой', '6']])
-    if mes.text == "16:00":
+    if (mes.text == "16:00" or mes.text == "17:00" or mes.text == "17:00" or mes.text == "18:00"
+            or mes.text == "19:00" or mes.text == "20:00" or mes.text == "21:00" or mes.text == "22:00" or mes.text == "23:00"):
         ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
         bot.register_next_step_handler(ngs, table)
-    elif mes.text == "17:00":
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, table)
-    elif mes.text == "18:00":
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, table)
-    elif mes.text == "19:00":
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, table)
-    elif mes.text == "20:00":
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, table)
-    elif mes.text == "21:00":
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, table)
-    elif mes.text == "22:00":
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, table)
-    elif mes.text == "23:00":
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
-        bot.register_next_step_handler(ngs, table)
+    # elif mes.text == "17:00":
+    #     ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+    #     bot.register_next_step_handler(ngs, table)
+    # elif mes.text == "18:00":
+    #     ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+    #     bot.register_next_step_handler(ngs, table)
+    # elif mes.text == "19:00":
+    #     ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+    #     bot.register_next_step_handler(ngs, table)
+    # elif mes.text == "20:00":
+    #     ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+    #     bot.register_next_step_handler(ngs, table)
+    # elif mes.text == "21:00":
+    #     ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+    #     bot.register_next_step_handler(ngs, table)
+    # elif mes.text == "22:00":
+    #     ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+    #     bot.register_next_step_handler(ngs, table)
+    # elif mes.text == "23:00":
+    #     ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboard)
+    #     bot.register_next_step_handler(ngs, table)
     elif mes.text == "Назад":
         ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards())
         bot.register_next_step_handler(ngs, menu)
