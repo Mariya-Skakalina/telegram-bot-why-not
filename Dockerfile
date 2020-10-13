@@ -2,7 +2,7 @@ FROM python:3.8-alpine3.12
 
 RUN apk update && apk add build-base python3-dev linux-headers pcre-dev
 
-RUN pip install pyTelegramBotAPI uwsgi && pip install cherrypy
+RUN pip install pyTelegramBotAPI uwsgi && pip install cherrypy && pip install requests
 
 WORKDIR /app
 
