@@ -100,7 +100,7 @@ def booking(mes):
 
 def table(message):
     print(message.chat.id)
-    bot.forward_message(message.chat.id, '-1001199493217', "Привет")
+    bot.forward_message(message.chat.id, -1001199493217, "Привет")
     msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=keyboards(['Бронирование', 'Цены'],
                                                                                          ['Позвать кальянщика']))
     bot.register_next_step_handler(msg, menu)
