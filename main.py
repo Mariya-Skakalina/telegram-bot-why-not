@@ -101,7 +101,7 @@ def booking(mes):
         ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards(['Бронирование', 'Цены'],
                                                                             ['Позвать кальянщика']))
         bot.register_next_step_handler(ngs, menu)
-
+print(booking_seat['time'])
 
 def table(message):
     msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=keyboards(['Бронирование', 'Цены'],
