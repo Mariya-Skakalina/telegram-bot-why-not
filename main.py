@@ -99,15 +99,10 @@ def booking(mes):
 
 
 def table(message):
-    print(message.chat.id)
+    a = bot.forward_message("-1001199493217", message.chat.id, "Привет")
     msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=keyboards(['Бронирование', 'Цены'],
                                                                                          ['Позвать кальянщика']))
     bot.register_next_step_handler(msg, menu)
-
-
-@bot.message_handler(content_types=['text'])
-def all_messages(message):
-    bot.forward_message("1001199493217", message.chat.id, message.message_id)
 
 
 bot.remove_webhook()
