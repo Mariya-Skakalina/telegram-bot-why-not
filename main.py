@@ -85,10 +85,14 @@ def price(mes):
         bot.register_next_step_handler(ngs, menu)
 
 
+booking_state = {}
+
+
 def booking(mes):
     if (mes.text == "16:00" or mes.text == "17:00" or mes.text == "17:00" or mes.text == "18:00"
             or mes.text == "19:00" or mes.text == "20:00" or mes.text == "21:00" or mes.text == "22:00"
             or mes.text == "23:00"):
+        booking_state['time'] = mes.text
         ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboards(['1', '2', '3'],
                                                                                      ['4', '5 cтол с приставкой', '6']))
         bot.register_next_step_handler(ngs, table)
@@ -99,7 +103,8 @@ def booking(mes):
 
 
 def table(message):
-    bot.send_message("-1001199493217", "Привет")
+    booking_state['table'] = message.text
+    bot.send_message("-1001199493217", f'Бронь на {booking_state["time"]}, стол {booking_state["table"]}')
     msg = bot.send_message(message.chat.id, "Стол заброанирован", reply_markup=keyboards(['Бронирование', 'Цены'],
                                                                                          ['Позвать кальянщика']))
     bot.register_next_step_handler(msg, menu)
