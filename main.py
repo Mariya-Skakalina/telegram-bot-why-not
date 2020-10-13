@@ -70,34 +70,34 @@ def menu(message):
         bot.register_next_step_handler(ngs, menu)
 
 
-def price(mes):
-    if mes.text == "Кальян":
-        ngs = bot.send_message(mes.chat.id, "Цена кальяна 600 рублей")
+def price(message):
+    if message.text == "Кальян":
+        ngs = bot.send_message(message.chat.id, "Цена кальяна 600 рублей")
         bot.register_next_step_handler(ngs, price)
-    elif mes.text == "Пробка":
-        ngs = bot.send_message(mes.chat.id, "Цена пробки 200 рублей")
+    elif message.text == "Пробка":
+        ngs = bot.send_message(message.chat.id, "Цена пробки 200 рублей")
         bot.register_next_step_handler(ngs, price)
-    elif mes.text == "Кальян с приставкой":
-        ngs = bot.send_message(mes.chat.id, "Цена кальяна с приставкой 700 рублей")
+    elif message.text == "Кальян с приставкой":
+        ngs = bot.send_message(message.chat.id, "Цена кальяна с приставкой 700 рублей")
         bot.register_next_step_handler(ngs, price)
-    elif mes.text == "Назад":
-        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards(['Бронирование', 'Цены'], ['Позвать кальянщика']))
+    elif message.text == "Назад":
+        ngs = bot.send_message(message.chat.id, "Назад", reply_markup=keyboards(['Бронирование', 'Цены'], ['Позвать кальянщика']))
         bot.register_next_step_handler(ngs, menu)
 
 
 booking_state = {}
 
 
-def booking(mes):
-    if (mes.text == "16:00" or mes.text == "17:00" or mes.text == "17:00" or mes.text == "18:00"
-            or mes.text == "19:00" or mes.text == "20:00" or mes.text == "21:00" or mes.text == "22:00"
-            or mes.text == "23:00"):
-        booking_state['time'] = mes.text
-        ngs = bot.send_message(mes.chat.id, 'Выберите стол:', reply_markup=keyboards(['1', '2', '3'],
+def booking(message):
+    if (message.text == "16:00" or message.text == "17:00" or message.text == "17:00" or message.text == "18:00"
+            or message.text == "19:00" or message.text == "20:00" or message.text == "21:00" or message.text == "22:00"
+            or message.text == "23:00"):
+        booking_state['time'] = message.text
+        ngs = bot.send_message(message.chat.id, 'Выберите стол:', reply_markup=keyboards(['1', '2', '3'],
                                                                                      ['4', '5 cтол с приставкой', '6']))
         bot.register_next_step_handler(ngs, table)
-    elif mes.text == "Назад":
-        ngs = bot.send_message(mes.chat.id, "Назад", reply_markup=keyboards(['Бронирование', 'Цены'],
+    elif message.text == "Назад":
+        ngs = bot.send_message(message.chat.id, "Назад", reply_markup=keyboards(['Бронирование', 'Цены'],
                                                                             ['Позвать кальянщика']))
         bot.register_next_step_handler(ngs, menu)
 
